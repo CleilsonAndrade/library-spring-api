@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.cleilsonandrade.libraryspringapi.service.exception.EntityNotFound;
+import br.cleilsonandrade.libraryspringapi.service.exception.InvalidLogin;
 import br.cleilsonandrade.libraryspringapi.service.exception.UserAlreadyExists;
 import br.cleilsonandrade.libraryspringapi.service.exception.UserDoesNotExist;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,18 @@ public class ControllerException {
       HttpServletRequest request) {
     String error = "User does not exist";
     HttpStatus status = HttpStatus.NOT_FOUND;
+    ErrorResponse err = new ErrorResponse(Instant.now(), status.value(), error, entityNotFound.getMessage(),
+        request.getRequestURI());
+    request.getRequestURI();
+
+    return ResponseEntity.status(status).body(err);
+  }
+
+  @ExceptionHandler(EntityNotFound.class)
+  public ResponseEntity<ErrorResponse> invalidLoginError(InvalidLogin entityNotFound,
+      HttpServletRequest request) {
+    String error = "Invalid Login";
+    HttpStatus status = HttpStatus.BAD_REQUEST;
     ErrorResponse err = new ErrorResponse(Instant.now(), status.value(), error, entityNotFound.getMessage(),
         request.getRequestURI());
     request.getRequestURI();
