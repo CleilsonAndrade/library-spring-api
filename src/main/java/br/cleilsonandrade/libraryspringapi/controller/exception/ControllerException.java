@@ -68,7 +68,19 @@ public class ControllerException {
   public ResponseEntity<ErrorResponse> userDoesNotHavePermissionError(UserDoesNotHavePermission entityNotFound,
       HttpServletRequest request) {
     String error = "User does not have permission";
-    HttpStatus status = HttpStatus.BAD_REQUEST;
+    HttpStatus status = HttpStatus.FORBIDDEN;
+    ErrorResponse err = new ErrorResponse(Instant.now(), status.value(), error, entityNotFound.getMessage(),
+        request.getRequestURI());
+    request.getRequestURI();
+
+    return ResponseEntity.status(status).body(err);
+  }
+
+  @ExceptionHandler(SecurityException.class)
+  public ResponseEntity<ErrorResponse> securityExceptionTokenError(SecurityException entityNotFound,
+      HttpServletRequest request) {
+    String error = "Token invalid";
+    HttpStatus status = HttpStatus.FORBIDDEN;
     ErrorResponse err = new ErrorResponse(Instant.now(), status.value(), error, entityNotFound.getMessage(),
         request.getRequestURI());
     request.getRequestURI();
