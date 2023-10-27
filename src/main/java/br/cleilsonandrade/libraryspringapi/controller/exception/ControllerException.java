@@ -12,6 +12,7 @@ import br.cleilsonandrade.libraryspringapi.service.exception.EntityNotFound;
 import br.cleilsonandrade.libraryspringapi.service.exception.InvalidLogin;
 import br.cleilsonandrade.libraryspringapi.service.exception.UserAlreadyExists;
 import br.cleilsonandrade.libraryspringapi.service.exception.UserDoesNotExist;
+import br.cleilsonandrade.libraryspringapi.service.exception.UserDoesNotHavePermission;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
@@ -27,7 +28,7 @@ public class ControllerException {
     return ResponseEntity.status(status).body(err);
   }
 
-  @ExceptionHandler(EntityNotFound.class)
+  @ExceptionHandler(UserAlreadyExists.class)
   public ResponseEntity<ErrorResponse> userAlreadyExistsError(UserAlreadyExists entityNotFound,
       HttpServletRequest request) {
     String error = "User already exists";
@@ -39,7 +40,7 @@ public class ControllerException {
     return ResponseEntity.status(status).body(err);
   }
 
-  @ExceptionHandler(EntityNotFound.class)
+  @ExceptionHandler(UserDoesNotExist.class)
   public ResponseEntity<ErrorResponse> userDoesNotExistError(UserDoesNotExist entityNotFound,
       HttpServletRequest request) {
     String error = "User does not exist";
@@ -51,10 +52,22 @@ public class ControllerException {
     return ResponseEntity.status(status).body(err);
   }
 
-  @ExceptionHandler(EntityNotFound.class)
+  @ExceptionHandler(InvalidLogin.class)
   public ResponseEntity<ErrorResponse> invalidLoginError(InvalidLogin entityNotFound,
       HttpServletRequest request) {
     String error = "Invalid Login";
+    HttpStatus status = HttpStatus.BAD_REQUEST;
+    ErrorResponse err = new ErrorResponse(Instant.now(), status.value(), error, entityNotFound.getMessage(),
+        request.getRequestURI());
+    request.getRequestURI();
+
+    return ResponseEntity.status(status).body(err);
+  }
+
+  @ExceptionHandler(UserDoesNotHavePermission.class)
+  public ResponseEntity<ErrorResponse> userDoesNotHavePermissionError(UserDoesNotHavePermission entityNotFound,
+      HttpServletRequest request) {
+    String error = "User does not have permission";
     HttpStatus status = HttpStatus.BAD_REQUEST;
     ErrorResponse err = new ErrorResponse(Instant.now(), status.value(), error, entityNotFound.getMessage(),
         request.getRequestURI());
